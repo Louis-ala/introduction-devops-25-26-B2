@@ -49,22 +49,22 @@ jobs:
       - name: Build application
         run: npm run build
 
-  trufflehog:
-    name: TruffleHog Secret Scan
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read # Required to checkout and read repo files
-      security-events: write # Required to upload SARIF files to Security tab
-    
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+    trufflehog:
+      on:
+        push:
+          branches:
+            - main
+        pull_request:
 
-      
-      - name: Run TruffleHog secret scanner
-        uses: trufflesecurity/trufflehog@main
-        with:
-          extra_args: --results=verified,unknown
+        jobs:
+          test:
+            runs-on: ubuntu-latest
+          steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                fetch-depth: 0
+            - name: Secret Scanning
+              uses: trufflesecurity/trufflehog@main
+              with:
+              extra_args: --results=verified,unknown
